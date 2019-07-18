@@ -82,7 +82,7 @@ __all__ = [
     'ZERO_OR_MORE',
 ]
 
-
+from boxx import *
 import os as _os
 import re as _re
 import sys as _sys
@@ -1350,6 +1350,7 @@ class _ActionsContainer(object):
         action_class = self._pop_action_class(kwargs)
         if not callable(action_class):
             raise ValueError('unknown action "%s"' % (action_class,))
+        
         action = action_class(**kwargs)
 
         # raise an error if the action type is not callable
@@ -1363,7 +1364,7 @@ class _ActionsContainer(object):
                 self._get_formatter()._format_args(action, None)
             except TypeError:
                 raise ValueError("length of metavar tuple does not match nargs")
-
+        import boxx.g
         return self._add_action(action)
 
     def add_argument_group(self, *args, **kwargs):
