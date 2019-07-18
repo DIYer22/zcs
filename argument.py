@@ -9,10 +9,20 @@ Created on Thu Jul 18 18:53:35 2019
 from boxx import *
 from boxx import os
 import argparse
+import yacs
 
-class argument(object):
-    def __init__(self, ):
-        self
+identity = lambda x:x
+
+class _defaultArg():
+    pass
+
+class argument(argparse._AttributeHolder):
+    def __init__(self, default=_defaultArg, type=_defaultArg, help=_defaultArg, metavar=_defaultArg):
+        dic = dict(default=default, type=type, help=help, metavar=metavar)
+        dic = dict(filter(lambda x:x[1] is not _defaultArg, dic.items()))
+        self.__dict__.update(dic)
+
+        
 _action_dict = {
            None: argparse._StoreAction,
           'store': argparse._StoreAction,
@@ -31,7 +41,8 @@ def _pop_action_class(kwargs, default=None):
     return _action_dict[action]
 
 if __name__ == "__main__":
-    _pop_action_class()
+#    _pop_action_class()
+    arg = argument(1, int)
     pass
     
     
