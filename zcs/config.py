@@ -9,6 +9,7 @@ Created on Fri Jul 19 13:30:51 2019
 import argparse
 import yacs.config as yacs
 import copy
+import yaml
 from functools import wraps
 
 identity = lambda x:x
@@ -16,10 +17,25 @@ identity = lambda x:x
 class _defaultArg():
     pass
 
-
 class argument(argparse._AttributeHolder):
-    def __init__(self, default=_defaultArg, type=_defaultArg, help=_defaultArg, metavar=_defaultArg):
-        dic = dict(default=default, type=type, help=help, metavar=metavar)
+    """same API with parser.add_argument, except "--opt"
+    """
+    def __init__(
+            self, 
+            default=_defaultArg, 
+            type=_defaultArg, 
+            help=_defaultArg, 
+            metavar=_defaultArg,
+            action=_defaultArg,
+            nargs=_defaultArg,
+            const=_defaultArg,
+            choices=_defaultArg,
+            required=_defaultArg,
+            dest=_defaultArg,
+        ):
+        dic = dict(default=default, type=type, help=help, metavar=metavar,
+            action=action, nargs=nargs, const=const, choices=choices,
+            required=required, dest=dest, )
         dic = dict(filter(lambda x:x[1] is not _defaultArg, dic.items()))
         self.__dict__.update(dic)
 
@@ -102,6 +118,30 @@ class CfgNode(yacs.CfgNode):
             value = _parser_action(d, subkey, v)
             d[subkey] = value
 
+    def dump(self, **kwargs):
+        """Dump to a string."""
+        def convert_to_dict(cfg_node, key_list):
+            if not isinstance(cfg_node, CfgNode):
+                yacs._assert_with_logging(
+                    _valid_type(cfg_node),
+                    "Key {} with value {} is not a valid type; valid types: {}".format(
+                        ".".join(key_list), type(cfg_node), _VALID_TYPES
+                    ),
+                )
+                return cfg_node
+            else:
+                cfg_dict = dict(cfg_node)
+                for k, v in cfg_dict.items():
+                    cfg_dict[k] = convert_to_dict(v, key_list + [k])
+                return cfg_dict
+
+        self_as_dict = convert_to_dict(self, [])
+        return yaml.safe_dump(self_as_dict, **kwargs)
+
+_VALID_TYPES = copy.deepcopy(yacs._VALID_TYPES)
+_VALID_TYPES.add(type(None))
+def _valid_type(value, allow_cfg_node=False):
+    return (type(value) in _VALID_TYPES) or (allow_cfg_node and isinstance(value, CfgNode))
 
 def _parser_action(node, k, v):
     argk = k if k.startswith('--') else ('--' + k)

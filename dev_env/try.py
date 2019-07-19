@@ -13,9 +13,10 @@ with impt('..'):
     from zcs.config import CfgNode, argument
 
 #import argparse
-#import yacs.config as yacs
-import yacs_local as yacs
+import yacs.config as yacs
+#import yacs_local as yacs
 import argparse_local as argparse
+import yaml
 
 def get_parser():
     parser = argparse.ArgumentParser(prog='PROG', allow_abbrev=True)
@@ -39,22 +40,27 @@ CN = CfgNode
 cfg = CN()
 cfg.TASK = 'task'
 cfg.NODE = CN()
+cfg.NODE.ATTR1 = argument(None, eval)
 cfg.TEST = argument(2)
 cfg.TEST = 2
 
 
 yamlp = 'a.yaml'
 cfg.merge_from_file(yamlp)
-cfg.merge_from_list([ 'TEST', '10'])
+cfg.merge_from_list([ 'TEST', 'hh', 'NODE.ATTR1', '9+1'])
 
 print(cfg)
 
 def load_yaml(yamlp):
-    import yaml
     yamlstr = openread(yamlp)
     ya = yaml.safe_load(yamlstr)
     return ya
     print(ya)
+
+s = cfg.dump()
+print('\n\ndump:')
+print(s)
+
 if __name__ == "__main__":
     pass
     
