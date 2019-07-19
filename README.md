@@ -1,10 +1,10 @@
 # zcs 中文说明
 
-zcs = "Z config system", 结合了 `argparse` and `yacs` 的优点
+"<strong>Z</strong>  <strong>C</strong>onfiguration <strong>S</strong>ystem": 结合了 `argparse` and `yacs` 的优点而打造出的**灵活, 强大**的配置文件管理系统
 
 ## 竞品对比
 
-| config system | 缺点 | 优点 |
+| configuration system | 缺点 | 优点 |
 | :-- | -- | -- |
 | `argparse` | 不支持配置文件, 不支持层级结构, 不支持合并 | 
 | `yacs` | 不支持 `None`, 类型系统令人困惑 |
