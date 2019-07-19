@@ -148,7 +148,7 @@ def _merge_a_into_b(a, b, root, key_list):
 
 parser = argparse.ArgumentParser(prog='Z Config System Parser')
 parser.add_argument(
-    'config',
+    '--config',
     default="",
     metavar="FILE",
     help="path to config file",

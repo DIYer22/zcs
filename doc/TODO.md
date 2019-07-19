@@ -13,4 +13,5 @@
 
 ## Done
 
- - [ ] `setup.py` and upload to `PyPI`
+ - [x] add `types.py`: `str2bool`, `fstring`
+ - [x] `setup.py` and upload to `PyPI`
