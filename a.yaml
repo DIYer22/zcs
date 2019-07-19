@@ -1,5 +1,1 @@
-AFFINITY:
-  DIRECT_CODE: 1
-  DS: [1, 2, 4, 8]
- # INVERT_BIAS: ~
- # MAX_LEN: 真的吗
+TASK : 1

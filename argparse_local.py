@@ -1364,7 +1364,6 @@ class _ActionsContainer(object):
                 self._get_formatter()._format_args(action, None)
             except TypeError:
                 raise ValueError("length of metavar tuple does not match nargs")
-        import boxx.g
         return self._add_action(action)
 
     def add_argument_group(self, *args, **kwargs):
@@ -1926,6 +1925,8 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
             assert action_tuples
             for action, args, option_string in action_tuples:
                 take_action(action, args, option_string)
+            g.argg = args
+            g()
             return stop
 
         # the list of Positionals left to be parsed; this is modified
@@ -2030,7 +2031,7 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
                              if action.help is not SUPPRESS]
                     msg = _('one of the arguments %s is required')
                     self.error(msg % ' '.join(names))
-
+        g()
         # return the updated namespace and the extra arguments
         return namespace, extras
 
