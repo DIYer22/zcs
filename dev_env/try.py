@@ -43,11 +43,12 @@ cfg.NODE = CN()
 cfg.NODE.ATTR1 = argument(None, eval)
 cfg.TEST = argument(2)
 cfg.TEST = argument(None, str, choices=['1','b','c'])
-
+cfg.TEST = argument(None, str, choices=[None, '1','b','c'])
+#cfg.TEST = '9'
 
 yamlp = 'a.yaml'
 cfg.merge_from_file(yamlp)
-cfg.merge_from_list([ 'TEST', '1', 'NODE.ATTR1', '9+1'])
+cfg.merge_from_list([ 'TEST', 'None', 'NODE.ATTR1', '9+1'])
 
 print(cfg)
 

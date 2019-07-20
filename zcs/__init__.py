@@ -21,6 +21,6 @@ __support__ = "https://github.com/DIYer22/zcs/issues"
 from .config import CfgNode, argument, identity
 from .config import parser, parse_args, merge_by_args
 
-from .type import str2bool, fstring
+from .type import str2bool, ints, fstring, try_return_None
 
 

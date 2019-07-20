@@ -14,29 +14,36 @@ from functools import wraps
 
 identity = lambda x:x
 
-class _defaultArg():
-    pass
+_None_ = {None}
 
 class argument(argparse._AttributeHolder):
-    """same API with parser.add_argument, except "--opt"
+    """Same API with "parser.add_argument", but remove name and flags, ex. "--opt"
+    
+    Usage:    
+        >>> cfg.FOO = argument(default=None, type=int, help="FOO is a int type, default is None")
     """
     def __init__(
             self, 
-            default=_defaultArg, 
-            type=_defaultArg, 
-            help=_defaultArg, 
-            metavar=_defaultArg,
-            action=_defaultArg,
-            nargs=_defaultArg,
-            const=_defaultArg,
-            choices=_defaultArg,
-            required=_defaultArg,
-            dest=_defaultArg,
+            default=_None_, 
+            type=_None_, 
+            help=_None_, 
+            metavar=_None_,
+            action=_None_,
+            nargs=_None_,
+            const=_None_,
+            choices=_None_,
+            required=_None_,
+            dest=_None_,
         ):
+        if default is None and type is not _None_:
+            # when default is None
+            # make sure ATTR could set back to None by args.opts
+            from .type import try_return_None
+            type = try_return_None(type)
         dic = dict(default=default, type=type, help=help, metavar=metavar,
             action=action, nargs=nargs, const=const, choices=choices,
             required=required, dest=dest, )
-        dic = dict(filter(lambda x:x[1] is not _defaultArg, dic.items()))
+        dic = dict(filter(lambda x:x[1] is not _None_, dic.items()))
         self.__dict__.update(dic)
 
 
@@ -44,7 +51,7 @@ class CfgNode(yacs.CfgNode):
     __allow_cover__ = True
     @wraps(yacs.CfgNode.__init__)
     def __init__(self, *l, **kv):
-        super(type(self), self).__init__(*l, **kv)
+        super(CfgNode, self).__init__(*l, **kv)
         parser = argparse.ArgumentParser(prog='cfg')
         self.__dict__['__parser__'] = parser
         self.__dict__['__action_dic__'] = parser._option_string_actions

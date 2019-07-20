@@ -18,9 +18,15 @@ def str2bool(s):
         return bool(s)
     raise argparse.ArgumentTypeError('Boolean value expected. But got "%s"'%s)
 
+def ints(s):
+    """Return a list of int in the string
+    """
+    import re
+    return list(map(int, re.findall(r"-?\d+\d*", s)))
+
 def fstring(eval_locals=None):
-    '''treate the string as fstring
-    
+    '''Treate the string as fstring
+
     Usage:
         >>> agument(type=fstring())
     '''
@@ -30,6 +36,17 @@ def fstring(eval_locals=None):
         code = 'f""" %s """' % s
         return eval(code, eval_locals)
     return _fstring
+
+def try_return_None(type_fun):
+    """If a string s == "None", return None
+    else return type_fun(s)
+    """
+    def _type(s):
+        if s.strip() in ("None",):
+            return None
+        else:
+            return type_fun(s)
+    return _type
 
 if __name__ == "__main__":
     aa = 55
