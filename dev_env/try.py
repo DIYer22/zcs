@@ -42,12 +42,12 @@ cfg.TASK = 'task'
 cfg.NODE = CN()
 cfg.NODE.ATTR1 = argument(None, eval)
 cfg.TEST = argument(2)
-cfg.TEST = 2
+cfg.TEST = argument(None, str, choices=['1','b','c'])
 
 
 yamlp = 'a.yaml'
 cfg.merge_from_file(yamlp)
-cfg.merge_from_list([ 'TEST', 'hh', 'NODE.ATTR1', '9+1'])
+cfg.merge_from_list([ 'TEST', '1', 'NODE.ATTR1', '9+1'])
 
 print(cfg)
 

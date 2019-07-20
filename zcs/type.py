@@ -33,7 +33,9 @@ def fstring(eval_locals=None):
 
 if __name__ == "__main__":
     aa = 55
-    p-fstring(dict(aa=3))("aa={aa}")
+    typee = fstring(dict(aa=3))
+    s = typee("aa={aa}")
+    print(s)
     pass
     
     
