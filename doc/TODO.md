@@ -2,9 +2,7 @@
 
 ## TODO
 
- - [ ] README: Chinese Version
  - [ ] README: English Version
- - [ ] examples
  - [ ] test code
  - [ ] dump to yaml or zcs.pkl and suport vis pkl
  - [ ] `--help`
@@ -13,5 +11,7 @@
 
 ## Done
 
+ - [x] README: Chinese Version
+ - [x] example
  - [x] add `types.py`: `str2bool`, `fstring`
  - [x] `setup.py` and upload to `PyPI`

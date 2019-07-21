@@ -5,8 +5,7 @@
 @mail: ylxx@live.com
 Created on Sun Jul 21 10:34:09 2019
 """
-from zcs import CfgNode as CN
-from yacs.config import CfgNode as CN
+from zcs.config import CfgNode as CN
 
 cfg = CN()
 cfg.OUTPUT = 'outputs/resnet_50'
