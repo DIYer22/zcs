@@ -1,0 +1,5 @@
+OUTPUT: 'outputs/senet_152'
+MODEL:
+    BACKBONE: 'senet'
+    LAYERS: 152
+    
