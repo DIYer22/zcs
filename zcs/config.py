@@ -5,14 +5,15 @@
 @mail: ylxx@live.com
 Created on Fri Jul 19 13:30:51 2019
 """
-
-import argparse
-import yacs.config as yacs
+import os
 import copy
 import yaml
 from functools import wraps
+import argparse
+import yacs.config as yacs
 
-identity = lambda x:x
+def identity(x):
+    return x
 
 _None_ = {None}
 
@@ -97,6 +98,23 @@ class CfgNode(yacs.CfgNode):
         """Merge `cfg_other` into this CfgNode."""
         _merge_a_into_b(cfg_other, self, self, [])
 
+    @classmethod
+    def _load_cfg_py_source(cls, filename):
+        """Load a config from a Python source file."""
+        module = yacs._load_module_from_file("yacs.config.override", filename)
+        yacs._assert_with_logging(
+            hasattr(module, "cfg"),
+            "Python module from file {} must have 'cfg' attr".format(filename),
+        )
+        VALID_ATTR_TYPES = {dict, CfgNode, yacs.CfgNode}
+        yacs._assert_with_logging(
+            type(module.cfg) in VALID_ATTR_TYPES,
+            "Imported module 'cfg' attr must be in {} but is {} instead".format(
+                VALID_ATTR_TYPES, type(module.cfg)
+            ),
+        )
+        return cls(module.cfg)
+    
     def merge_from_list(self, cfg_list):
         """Merge config (keys, values) in a list (e.g., from command line) into
         this CfgNode. For example, `cfg_list = ['FOO.BAR', 0.5]`.
@@ -125,7 +143,7 @@ class CfgNode(yacs.CfgNode):
             value = _parser_action(d, subkey, v)
             d[subkey] = value
 
-    def dump(self, **kwargs):
+    def dump(self, fname=None, **kwargs):
         """Dump to a string."""
         def convert_to_dict(cfg_node, key_list):
             if not isinstance(cfg_node, CfgNode):
@@ -143,7 +161,14 @@ class CfgNode(yacs.CfgNode):
                 return cfg_dict
 
         self_as_dict = convert_to_dict(self, [])
-        return yaml.safe_dump(self_as_dict, **kwargs)
+        yaml_str = yaml.safe_dump(self_as_dict, **kwargs)
+        if fname is not None:
+            dir_name = os.path.dirname(fname)
+            if not os.path.isdir(dir_name):
+                os.makedirs(dir_name)
+            with open(fname, 'w') as f:
+                f.write(fname)
+        return yaml_str
 
 _VALID_TYPES = copy.deepcopy(yacs._VALID_TYPES)
 _VALID_TYPES.add(type(None))
@@ -185,11 +210,8 @@ def _merge_a_into_b(a, b, root, key_list):
         if isinstance(v, dict):
             if not isinstance(v, yacs.CfgNode):
                 v = yacs.CfgNode(v)
-            try:
-                _merge_a_into_b(v, b[k], root, key_list + [k])
-            except BaseException:
-                raise
-        elif isinstance(v, str):
+            return _merge_a_into_b(v, b[k], root, key_list + [k])
+        if isinstance(v, str):
             v = _parser_action(b, k, v)
         b[k] = v
 
