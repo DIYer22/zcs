@@ -81,7 +81,7 @@ class CfgNode(yacs.CfgNode):
                             help='CfgNode')
         else:  # if only value is same as yacs
             arg = argument(default=value, 
-                            help='default is "%s", without argument'%value)
+                            help='default is "%s", without argument' % str(value))
         # allow replace in parser
         if self.__allow_cover__ and argk in action_dic:
             action_dic.pop(argk)
