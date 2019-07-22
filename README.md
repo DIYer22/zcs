@@ -1,3 +1,4 @@
+English version README is coming soon
 # zcs 中文说明
 
 **`zcs`** is short of "<strong>Z</strong>  <strong>C</strong>onfiguration <strong>S</strong>ystem": 结合了 `argparse` and `yacs` 的优点而打造出的**灵活, 强大**的配置管理系统
