@@ -2,6 +2,7 @@
 
 ## TODO
 
+ - [ ] DEBUG: `clone()` in Windows and WSL will raise Exception
  - [ ] README: English Version
  - [ ] test code
  - [ ] dump to yaml or zcs.pkl and suport vis pkl
