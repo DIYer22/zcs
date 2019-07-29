@@ -210,7 +210,8 @@ def _merge_a_into_b(a, b, root, key_list):
         if isinstance(v, dict):
             if not isinstance(v, yacs.CfgNode):
                 v = yacs.CfgNode(v)
-            return _merge_a_into_b(v, b[k], root, key_list + [k])
+            _merge_a_into_b(v, b[k], root, key_list + [k])
+            continue
         if isinstance(v, str):
             v = _parser_action(b, k, v)
         b[k] = v

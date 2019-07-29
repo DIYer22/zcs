@@ -11,7 +11,7 @@ from defaults import cfg
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--config',
-    default="",
+    default="configs/resnet_50.py",
     metavar="FILE",
     help="Path to config file",
 )
