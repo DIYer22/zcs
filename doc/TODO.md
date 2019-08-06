@@ -3,6 +3,7 @@
 ## TODO
 
  - [ ] DEBUG: `clone()` in Windows and WSL will raise Exception
+ - [ ] add `CfgNode.clone_as_base()` and `CfgNode.update_default_from_base(base)`
  - [ ] README: English Version
  - [ ] test code
  - [ ] dump to yaml or zcs.pkl and suport vis pkl
