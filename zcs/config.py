@@ -12,10 +12,13 @@ from functools import wraps
 import argparse
 import yacs.config as yacs
 
+
 def identity(x):
     return x
 
+
 _None_ = {None}
+
 
 class argument(argparse._AttributeHolder):
     """Same API with "parser.add_argument", but remove name and flags, ex. "--opt"
@@ -23,43 +26,55 @@ class argument(argparse._AttributeHolder):
     Usage:    
         >>> cfg.FOO = argument(default=None, type=int, help="FOO is a int type, default is None")
     """
+
     def __init__(
-            self, 
-            default=_None_, 
-            type=_None_, 
-            help=_None_, 
-            metavar=_None_,
-            action=_None_,
-            nargs=_None_,
-            const=_None_,
-            choices=_None_,
-            required=_None_,
-            dest=_None_,
-        ):
+        self,
+        default=_None_,
+        type=_None_,
+        help=_None_,
+        metavar=_None_,
+        action=_None_,
+        nargs=_None_,
+        const=_None_,
+        choices=_None_,
+        required=_None_,
+        dest=_None_,
+    ):
         if default is None and type is not _None_:
             # when default is None
             # make sure ATTR could set back to None by args.opts
             from .type import try_return_None
+
             type = try_return_None(type)
-        dic = dict(default=default, type=type, help=help, metavar=metavar,
-            action=action, nargs=nargs, const=const, choices=choices,
-            required=required, dest=dest, )
-        dic = dict(filter(lambda x:x[1] is not _None_, dic.items()))
+        dic = dict(
+            default=default,
+            type=type,
+            help=help,
+            metavar=metavar,
+            action=action,
+            nargs=nargs,
+            const=const,
+            choices=choices,
+            required=required,
+            dest=dest,
+        )
+        dic = dict(filter(lambda x: x[1] is not _None_, dic.items()))
         self.__dict__.update(dic)
 
 
 class CfgNode(yacs.CfgNode):
     __allow_cover__ = True
+
     @wraps(yacs.CfgNode.__init__)
     def __init__(self, *l, **kv):
         super(CfgNode, self).__init__(*l, **kv)
-        parser = argparse.ArgumentParser(prog='cfg')
-        self.__dict__['__parser__'] = parser
-        self.__dict__['__action_dic__'] = parser._option_string_actions
-    
+        parser = argparse.ArgumentParser(prog="cfg")
+        self.__dict__["__parser__"] = parser
+        self.__dict__["__action_dic__"] = parser._option_string_actions
+
     def _get_parser_actions(self):
-        return self.__dict__['__parser__'], self.__dict__['__action_dic__']
-    
+        return self.__dict__["__parser__"], self.__dict__["__action_dic__"]
+
     def __setattr__(self, name, value):
         if self.is_frozen():
             raise AttributeError(
@@ -72,28 +87,30 @@ class CfgNode(yacs.CfgNode):
             "Invalid attempt to modify internal CfgNode state: {}".format(name),
         )
         parser, action_dic = self._get_parser_actions()
-        argk = name if name.startswith('--') else ('--' + name)
-        if isinstance(value, argument):  # if argument 
+        argk = name if name.startswith("--") else ("--" + name)
+        if isinstance(value, argument):  # if argument
             arg = value
         elif isinstance(value, CfgNode):
-            value.__dict__['__parser__'].prog = parser.prog+ '.' + name
-            arg = argument(default=value, type=identity, 
-                            help='CfgNode')
+            value.__dict__["__parser__"].prog = parser.prog + "." + name
+            arg = argument(default=value, type=identity, help="CfgNode")
         else:  # if only value is same as yacs
-            arg = argument(default=value, 
-                            help='default is "%s", without argument' % str(value))
+            arg = argument(
+                default=value, help='default is "%s", without argument' % str(value)
+            )
         # allow replace in parser
         if self.__allow_cover__ and argk in action_dic:
             action_dic.pop(argk)
         kwargs = {
-                # set default type
-                'type': identity if isinstance(value, str) else self._decode_cfg_value
-                }
+            # set default type
+            "type": identity
+            if isinstance(value, str)
+            else self._decode_cfg_value
+        }
         kwargs.update(arg.__dict__)
         parser.add_argument(argk, **kwargs)
-        value = arg.__dict__.get('default', None)
+        value = arg.__dict__.get("default", None)
         self[name] = value
-        
+
     def merge_from_other_cfg(self, cfg_other):
         """Merge `cfg_other` into this CfgNode."""
         _merge_a_into_b(cfg_other, self, self, [])
@@ -114,7 +131,7 @@ class CfgNode(yacs.CfgNode):
             ),
         )
         return cls(module.cfg)
-    
+
     def merge_from_list(self, cfg_list):
         """Merge config (keys, values) in a list (e.g., from command line) into
         this CfgNode. For example, `cfg_list = ['FOO.BAR', 0.5]`.
@@ -131,7 +148,7 @@ class CfgNode(yacs.CfgNode):
                 continue
             if root.key_is_renamed(full_key):
                 root.raise_key_rename_error(full_key)
-            key_list = full_key.replace(">",".").split(".")
+            key_list = full_key.replace(">", ".").split(".")
             d = self
             for subkey in key_list[:-1]:
                 yacs._assert_with_logging(
@@ -139,18 +156,21 @@ class CfgNode(yacs.CfgNode):
                 )
                 d = d[subkey]
             subkey = key_list[-1]
-            yacs._assert_with_logging(subkey in d, "Non-existent key: {}".format(full_key))
+            yacs._assert_with_logging(
+                subkey in d, "Non-existent key: {}".format(full_key)
+            )
             value = _parser_action(d, subkey, v)
             d[subkey] = value
-    
+
     def merge_from_list_or_str(self, cfg_list_str):
         cfg_list = cfg_list_str
         if isinstance(cfg_list_str, str):
             cfg_list = cfg_list_str.strip().split()
         return self.merge_from_list(cfg_list)
-    
+
     def dump(self, fname=None, **kwargs):
         """Dump to a string."""
+
         def convert_to_dict(cfg_node, key_list):
             if not isinstance(cfg_node, CfgNode):
                 yacs._assert_with_logging(
@@ -172,46 +192,54 @@ class CfgNode(yacs.CfgNode):
             dir_name = os.path.dirname(fname)
             if not os.path.isdir(dir_name):
                 os.makedirs(dir_name)
-            with open(fname, 'w') as f:
+            with open(fname, "w") as f:
                 f.write(fname)
         return yaml_str
-    
+
     __placeholder__ = "[__placeholder_for_CfgNode_base__]"
-    
+
     def clone_as_base(self):
         base = self.clone()
+
         def trun_value_to_placeholder_(cfg):
-            for k,v in cfg.items():
+            for k, v in cfg.items():
                 if isinstance(v, yacs.CfgNode):
                     trun_value_to_placeholder_(v)
                 else:
                     cfg[k] = self.__placeholder__
+
         trun_value_to_placeholder_(base)
         return base
-    
+
     def update_placeholder_from_base(self, base):
         def copy_base_where_v_is_placeholder_(child, base):
-            for k,v in child.items():
+            for k, v in child.items():
                 if isinstance(v, str) and v == self.__placeholder__:
                     child[k] = base[k]
                 if isinstance(v, yacs.CfgNode):
                     copy_base_where_v_is_placeholder_(child[k], base[k])
+
         copy_base_where_v_is_placeholder_(self, base)
         return self
-        
-        
-        
+
+
 _VALID_TYPES = copy.deepcopy(yacs._VALID_TYPES)
 _VALID_TYPES.add(type(None))
+
+
 def _valid_type(value, allow_cfg_node=False):
-    return (type(value) in _VALID_TYPES) or (allow_cfg_node and isinstance(value, CfgNode))
+    return (type(value) in _VALID_TYPES) or (
+        allow_cfg_node and isinstance(value, CfgNode)
+    )
+
 
 def _parser_action(node, k, v):
-    argk = k if k.startswith('--') else ('--' + k)
+    argk = k if k.startswith("--") else ("--" + k)
     parser, action_dic = node._get_parser_actions()
     action = action_dic[argk]
     v = parser._get_values(action, [v])
     return v
+
 
 def _merge_a_into_b(a, b, root, key_list):
     """Merge config dictionary a into config dictionary b, clobbering the
@@ -248,13 +276,9 @@ def _merge_a_into_b(a, b, root, key_list):
                 v = _parser_action(b, k, v)
         b[k] = v
 
-parser = argparse.ArgumentParser(prog='Z Config System Parser')
-parser.add_argument(
-    '--config',
-    default="",
-    metavar="FILE",
-    help="path to config file",
-)
+
+parser = argparse.ArgumentParser(prog="Z Config System Parser")
+parser.add_argument("--config", default="", metavar="FILE", help="path to config file")
 parser.add_argument(
     "opts",
     help="Modify config options using the command-line",
@@ -262,9 +286,11 @@ parser.add_argument(
     nargs=argparse.REMAINDER,
 )
 
+
 def parse_args(parser=parser):
     args = parser.parse_args()
     return args
+
 
 def merge_by_args(cfg, args=None):
     if args is None:
@@ -272,9 +298,7 @@ def merge_by_args(cfg, args=None):
     if args.config:
         cfg.merge_from_file(args.config)
     cfg.merge_from_list(args.opts)
-    
+
+
 if __name__ == "__main__":
     pass
-    
-    
-    

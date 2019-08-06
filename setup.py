@@ -7,15 +7,23 @@ from datetime import date
 from setuptools import setup, find_packages
 
 # --- import your package ---
-packageName = 'zcs'
+packageName = "zcs"
 
-pyPath = '%s/__init__.py'%packageName if os.path.isdir(packageName) else '%s.py'%packageName
+pyPath = (
+    "%s/__init__.py" % packageName
+    if os.path.isdir(packageName)
+    else "%s.py" % packageName
+)
 
 with open(pyPath) as f:
     lines = f.readlines()
-code = ''.join(filter(lambda l: 'import ' not in l, lines))
-class Pack():
+code = "".join(filter(lambda l: "import " not in l, lines))
+
+
+class Pack:
     pass
+
+
 package = Pack()
 package.__name__ = packageName
 exec(code, package.__dict__)
@@ -35,8 +43,7 @@ if __name__ == "__main__":
     try:
         SHORT_DESCRIPTION = package.__short_description__  # GitHub Short Description
     except:
-        print(
-            "'__short_description__' not found in '%s.__init__.py'!" % PKG_NAME)
+        print("'__short_description__' not found in '%s.__init__.py'!" % PKG_NAME)
         SHORT_DESCRIPTION = "No short description!"
 
     # Long description will be the body of content on PyPI page
@@ -69,25 +76,22 @@ if __name__ == "__main__":
     except:
         MAINTAINER_EMAIL = None
 
-    PACKAGES, INCLUDE_PACKAGE_DATA, PACKAGE_DATA, PY_MODULES = (
-        None, None, None, None,
-    )
+    PACKAGES, INCLUDE_PACKAGE_DATA, PACKAGE_DATA, PY_MODULES = (None, None, None, None)
 
     # It's a directory style package
     if os.path.exists(__file__[:-8] + PKG_NAME):
         # Include all sub packages in package directory
-        PACKAGES = [PKG_NAME] + ["%s.%s" % (PKG_NAME, i)
-                                 for i in find_packages(PKG_NAME)]
+        PACKAGES = [PKG_NAME] + [
+            "%s.%s" % (PKG_NAME, i) for i in find_packages(PKG_NAME)
+        ]
 
         # Include everything in package directory
         INCLUDE_PACKAGE_DATA = None
-        PACKAGE_DATA = {
-            "": ["*.*"],
-        }
+        PACKAGE_DATA = {"": ["*.*"]}
 
     # It's a single script style package
     elif os.path.exists(__file__[:-8] + PKG_NAME + ".py"):
-        PY_MODULES = [PKG_NAME, ]
+        PY_MODULES = [PKG_NAME]
 
     # The project directory name is the GitHub repository name
     repository_name = os.path.basename(os.path.dirname(__file__))
@@ -98,7 +102,8 @@ if __name__ == "__main__":
     github_release_tag = str(date.today())
     # Source code download url
     DOWNLOAD_URL = "https://github.com/{0}/{1}/tarball/{2}".format(
-        GITHUB_USERNAME, repository_name, github_release_tag)
+        GITHUB_USERNAME, repository_name, github_release_tag
+    )
 
     try:
         LICENSE = package.__license__
@@ -106,11 +111,7 @@ if __name__ == "__main__":
         print("'__license__' not found in '%s.__init__.py'!" % PKG_NAME)
         LICENSE = ""
 
-    PLATFORMS = [
-        "Windows",
-        "MacOS",
-        "Unix",
-    ]
+    PLATFORMS = ["Windows", "MacOS", "Unix"]
 
     CLASSIFIERS = [
         "Development Status :: 4 - Beta",
@@ -134,7 +135,7 @@ if __name__ == "__main__":
         for line in f.read().decode("utf-8").split("\n"):
             line = line.strip()
             if "#" in line:
-                line = line[:line.find("#")].strip()
+                line = line[: line.find("#")].strip()
             if line:
                 REQUIRES.append(line)
     except:
@@ -144,8 +145,9 @@ if __name__ == "__main__":
     setup(
         name=PKG_NAME,
         description=SHORT_DESCRIPTION,
-#        long_description=LONG_DESCRIPTION,
-        long_description=SHORT_DESCRIPTION+'\nMore information on github: %s'%package.__github_url__,
+        #        long_description=LONG_DESCRIPTION,
+        long_description=SHORT_DESCRIPTION
+        + "\nMore information on github: %s" % package.__github_url__,
         version=VERSION,
         author=AUTHOR,
         author_email=AUTHOR_EMAIL,
@@ -153,7 +155,7 @@ if __name__ == "__main__":
         maintainer_email=MAINTAINER_EMAIL,
         packages=PACKAGES,
         include_package_data=INCLUDE_PACKAGE_DATA,
-#        package_data=PACKAGE_DATA,
+        #        package_data=PACKAGE_DATA,
         py_modules=PY_MODULES,
         url=package.__github_url__,
         download_url=package.__github_url__,

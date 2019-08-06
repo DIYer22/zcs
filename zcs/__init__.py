@@ -2,10 +2,10 @@
 
 from __future__ import unicode_literals
 
-'''
+"""
 Z Configuration System: a flexible powerful configuration system 
 which takes advantage of both argparse and yacs
-'''
+"""
 __version__ = "0.1.10"
 __short_description__ = "Z Configuration System: a flexible powerful configuration system which takes advantage of both argparse and yacs"
 __license__ = "MIT"
@@ -22,5 +22,3 @@ from .config import CfgNode, argument, identity
 from .config import parser, parse_args, merge_by_args
 
 from .type import str2bool, ints, fstring, try_return_None
-
-

@@ -10,7 +10,7 @@ from defaults import cfg
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    '--config',
+    "--config",
     default="configs/resnet_50.py",
     metavar="FILE",
     help="Path to config file",
@@ -24,14 +24,14 @@ parser.add_argument(
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    
+
     # 复制一份 cfg
-    cfg = cfg.clone()  
+    cfg = cfg.clone()
     # 融合 args.config 指定的的配置文件
-    cfg.merge_from_file(args.config)  
+    cfg.merge_from_file(args.config)
     # 融合来自命令行的成对配置
-    cfg.merge_from_list(args.opts)    
+    cfg.merge_from_list(args.opts)
     # dump 每次实验参数, 方便复现
-    cfg.dump(os.path.join(cfg.OUTPUT, 'dump.yaml'))
-    
+    cfg.dump(os.path.join(cfg.OUTPUT, "dump.yaml"))
+
     print(cfg)

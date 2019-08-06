@@ -6,8 +6,9 @@
 Created on Sun Jul 21 10:19:38 2019
 """
 from zcs.config import CfgNode as CN
-#　zcs 具有和 yacs 一样的接口和用法
-from zcs import argument 
+
+# 　zcs 具有和 yacs 一样的接口和用法
+from zcs import argument
 
 cfg = CN()
 
@@ -25,11 +26,10 @@ cfg.MODEL.LAYERS = argument(101, int, "How many layers of model")
 
 # 支持 choices 等多种 parser.add_argument 的接口
 cfg.MODEL.BACKBONE = argument(
-        default='resnet', 
-        choices=['resnet', 'shufflenet', 'senet'],
-        help="Backbone of the model",
-        )
+    default="resnet",
+    choices=["resnet", "shufflenet", "senet"],
+    help="Backbone of the model",
+)
 
 if __name__ == "__main__":
     print(cfg)
-    
