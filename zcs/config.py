@@ -142,7 +142,13 @@ class CfgNode(yacs.CfgNode):
             yacs._assert_with_logging(subkey in d, "Non-existent key: {}".format(full_key))
             value = _parser_action(d, subkey, v)
             d[subkey] = value
-
+    
+    def merge_from_list_or_str(self, cfg_list_str):
+        cfg_list = cfg_list_str
+        if isinstance(cfg_list_str, str):
+            cfg_list = cfg_list_str.strip().split()
+        return self.merge_from_list(cfg_list)
+    
     def dump(self, fname=None, **kwargs):
         """Dump to a string."""
         def convert_to_dict(cfg_node, key_list):
@@ -169,7 +175,32 @@ class CfgNode(yacs.CfgNode):
             with open(fname, 'w') as f:
                 f.write(fname)
         return yaml_str
-
+    
+    __placeholder__ = "[__placeholder_for_CfgNode_base__]"
+    
+    def clone_as_base(self):
+        base = self.clone()
+        def trun_value_to_None_(cfg):
+            for k,v in cfg.items():
+                if isinstance(v, yacs.CfgNode):
+                    trun_value_to_None_(v)
+                else:
+                    cfg[k] = self.__placeholder__
+        trun_value_to_None_(base)
+        return base
+    
+    def update_default_from_base(self, base):
+        def copy_base_where_v_is_None_(child, base):
+            for k,v in child.items():
+                if isinstance(v, str) and v == self.__placeholder__:
+                    child[k] = base[k]
+                if isinstance(v, yacs.CfgNode):
+                    copy_base_where_v_is_None_(child[k], base[k])
+        copy_base_where_v_is_None_(self, base)
+        return self
+        
+        
+        
 _VALID_TYPES = copy.deepcopy(yacs._VALID_TYPES)
 _VALID_TYPES.add(type(None))
 def _valid_type(value, allow_cfg_node=False):
