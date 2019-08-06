@@ -244,7 +244,8 @@ def _merge_a_into_b(a, b, root, key_list):
             _merge_a_into_b(v, b[k], root, key_list + [k])
             continue
         if isinstance(v, str):
-            v = _parser_action(b, k, v)
+            if v != CfgNode.__placeholder__:
+                v = _parser_action(b, k, v)
         b[k] = v
 
 parser = argparse.ArgumentParser(prog='Z Config System Parser')
