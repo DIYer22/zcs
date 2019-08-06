@@ -131,7 +131,7 @@ class CfgNode(yacs.CfgNode):
                 continue
             if root.key_is_renamed(full_key):
                 root.raise_key_rename_error(full_key)
-            key_list = full_key.split(".")
+            key_list = full_key.replace(">",".").split(".")
             d = self
             for subkey in key_list[:-1]:
                 yacs._assert_with_logging(
