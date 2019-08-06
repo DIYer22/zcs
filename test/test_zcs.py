@@ -46,7 +46,7 @@ class TestCfgNode(unittest.TestCase):
         print(cfg.DATA2)
         cfg.merge_from_list_or_str("DATA.NUM_CLASS 10 DATA.SIZE 1024 DATA2.SIZE 256")
         print(cfg)
-        cfg.DATA2.update_default_from_base(cfg.DATA)
+        cfg.DATA2.update_placeholder_from_base(cfg.DATA)
         print(cfg.DATA2)
 #        print(d2)
     def tearDown(self):

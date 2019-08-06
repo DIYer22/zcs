@@ -180,23 +180,23 @@ class CfgNode(yacs.CfgNode):
     
     def clone_as_base(self):
         base = self.clone()
-        def trun_value_to_None_(cfg):
+        def trun_value_to_placeholder_(cfg):
             for k,v in cfg.items():
                 if isinstance(v, yacs.CfgNode):
-                    trun_value_to_None_(v)
+                    trun_value_to_placeholder_(v)
                 else:
                     cfg[k] = self.__placeholder__
-        trun_value_to_None_(base)
+        trun_value_to_placeholder_(base)
         return base
     
-    def update_default_from_base(self, base):
-        def copy_base_where_v_is_None_(child, base):
+    def update_placeholder_from_base(self, base):
+        def copy_base_where_v_is_placeholder_(child, base):
             for k,v in child.items():
                 if isinstance(v, str) and v == self.__placeholder__:
                     child[k] = base[k]
                 if isinstance(v, yacs.CfgNode):
-                    copy_base_where_v_is_None_(child[k], base[k])
-        copy_base_where_v_is_None_(self, base)
+                    copy_base_where_v_is_placeholder_(child[k], base[k])
+        copy_base_where_v_is_placeholder_(self, base)
         return self
         
         
