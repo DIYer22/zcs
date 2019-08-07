@@ -72,6 +72,26 @@ class CfgNode(yacs.CfgNode):
         self.__dict__["__parser__"] = parser
         self.__dict__["__action_dic__"] = parser._option_string_actions
 
+    @classmethod
+    def _create_config_tree_from_dict(cls, dic, key_list):
+        """
+        Create a configuration tree using the given dict.
+        Any dict-like objects inside dict will be treated as a new CfgNode.
+
+        Args:
+            dic (dict):
+            key_list (list[str]): a list of names which index this CfgNode from the root.
+                Currently only used for logging purposes.
+        """
+        dic = copy.deepcopy(dic)
+        for k, v in dic.items():
+            if isinstance(v, dict):
+                # Convert dict to CfgNode
+                dic[k] = cls(v, key_list=key_list + [k])
+            else:
+                pass
+        return dic
+    
     def _get_parser_actions(self):
         return self.__dict__["__parser__"], self.__dict__["__action_dic__"]
 
