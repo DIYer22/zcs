@@ -7,13 +7,14 @@ Created on Tue Aug  6 20:36:47 2019
 """
 
 from boxx import *
-from boxx import os
+from boxx import pathjoin, tmpboxx, impt
 
-from zcs.config import CfgNode
-
-CN = CfgNode
-from zcs import argument
 import unittest
+
+with impt(".."):
+    from zcs.config import CfgNode
+    CN = CfgNode
+    from zcs import argument
 
 
 class TestCfgNode(unittest.TestCase):
@@ -41,13 +42,25 @@ class TestCfgNode(unittest.TestCase):
 
     def testBase(self):
         cfg = self.cfg.clone()
-        print(cfg.DATA2)
         cfg.merge_from_list_or_str("DATA.NUM_CLASS 10 DATA.SIZE 1024 DATA2.SIZE 256")
-        print(cfg)
         cfg.DATA2.update_placeholder_from_base(cfg.DATA)
-        print(cfg.DATA2)
 
-    #        print(d2)
+        self.assertTrue(cfg.DATA2.DIR == "dir2")
+        self.assertTrue(cfg.DATA2.IMG_MEAN == cfg.DATA.IMG_MEAN)
+        self.assertTrue(cfg.DATA.SIZE == 1024)
+        self.assertTrue(cfg.DATA2.SIZE == 256)
+        self.assertTrue(cfg.DATA.NUM_CLASS == cfg.DATA2.NUM_CLASS == 10)
+
+    def testDump(self):
+        import yaml
+
+        cfg = self.cfg.clone()
+        yamlp = pathjoin(tmpboxx(), "test.yaml")
+        cfg.dump(yamlp)
+        cfg_dict = yaml.load(open(yamlp))
+        cfgd = CfgNode(cfg_dict)
+        self.assertTrue(str(cfg.dump()) == str(cfgd.dump()))
+
     def tearDown(self):
         pass
 

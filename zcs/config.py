@@ -91,7 +91,7 @@ class CfgNode(yacs.CfgNode):
             else:
                 pass
         return dic
-    
+
     def _get_parser_actions(self):
         return self.__dict__["__parser__"], self.__dict__["__action_dic__"]
 
@@ -213,10 +213,10 @@ class CfgNode(yacs.CfgNode):
             if not os.path.isdir(dir_name):
                 os.makedirs(dir_name)
             with open(fname, "w") as f:
-                f.write(fname)
+                f.write(yaml_str)
         return yaml_str
 
-    __placeholder__ = "[__placeholder_for_CfgNode_base__]"
+    __placeholder__ = "__placeholder_for_CfgNode_base__"
 
     def clone_as_base(self):
         base = self.clone()
