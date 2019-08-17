@@ -256,6 +256,8 @@ def _valid_type(value, allow_cfg_node=False):
 def _parser_action(node, k, v):
     argk = k if k.startswith("--") else ("--" + k)
     parser, action_dic = node._get_parser_actions()
+    if argk not in action_dic:
+        return v
     action = action_dic[argk]
     v = parser._get_values(action, [v])
     return v
@@ -266,8 +268,8 @@ def _merge_a_into_b(a, b, root, key_list):
     options in b whenever they are also specified in a.
     """
     yacs._assert_with_logging(
-        isinstance(a, yacs.CfgNode),
-        "`a` (cur type {}) must be an instance of {}".format(type(a), yacs.CfgNode),
+        isinstance(a, dict),
+        "`a` (cur type {}) must be an instance of {}".format(type(a), dict),
     )
     yacs._assert_with_logging(
         isinstance(b, CfgNode),
