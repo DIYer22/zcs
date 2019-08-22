@@ -28,6 +28,22 @@ def ints(s):
     return list(map(int, re.findall(r"-?\d+\d*", s)))
 
 
+def str2index(s):
+    """
+    return a index or slice
+    """
+    if ":" in s:  # is slice
+
+        class GetSlice:
+            @classmethod
+            def __getitem__(self, slicee):
+                return slicee
+
+        return eval("GetSlice()[%s]" % s.replace("[", "").replace("]", ""))
+    else:
+        return ints(s)
+
+
 def fstring(eval_locals=None):
     """Treate the string as fstring
 
@@ -38,7 +54,7 @@ def fstring(eval_locals=None):
         eval_locals = sys._getframe(1).f_locals
 
     def _fstring(s):
-        code = 'f""" %s """' % s
+        code = 'f"""%s"""' % s
         return eval(code, eval_locals)
 
     return _fstring
@@ -62,5 +78,17 @@ if __name__ == "__main__":
     aa = 55
     typee = fstring(dict(aa=3))
     s = typee("aa={aa}")
-    print(s)
+    assert s == "aa=3", s
+
+    l = list(range(6))
+
+    s = ":2"
+    assert l[str2index(s)] == [0, 1]
+    s = "[4:]"
+    assert l[str2index(s)] == [4, 5]
+    s = ":4:2"
+    assert l[str2index(s)] == [0, 2]
+    s = "4, 2"
+    assert str2index(s) == [4, 2]
+
     pass
