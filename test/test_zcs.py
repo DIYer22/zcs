@@ -13,6 +13,7 @@ import unittest
 
 with impt(".."):
     from zcs.config import CfgNode
+
     CN = CfgNode
     from zcs import argument
 
@@ -40,9 +41,13 @@ class TestCfgNode(unittest.TestCase):
 
         cfg.DATA2.DIR = "dir2"
 
+        cfg.DATA3 = cfg.DATA.clone_as_base(exclude=["DIR"])
+
     def testBase(self):
         cfg = self.cfg.clone()
-        cfg.merge_from_list_or_str("DATA.NUM_CLASS 10 DATA.SIZE 1024 DATA2.SIZE 256")
+        cfg.merge_from_list_or_str(
+            "DATA.DIR dir1 DATA.NUM_CLASS 10 DATA.SIZE 1024 DATA2.SIZE 256"
+        )
         cfg.DATA2.update_placeholder_from_base(cfg.DATA)
 
         self.assertTrue(cfg.DATA2.DIR == "dir2")
@@ -50,6 +55,9 @@ class TestCfgNode(unittest.TestCase):
         self.assertTrue(cfg.DATA.SIZE == 1024)
         self.assertTrue(cfg.DATA2.SIZE == 256)
         self.assertTrue(cfg.DATA.NUM_CLASS == cfg.DATA2.NUM_CLASS == 10)
+
+        cfg.DATA3.update_placeholder_from_base(cfg.DATA2)
+        self.assertTrue(cfg.DATA3.DIR == None)
 
     def testDump(self):
         import yaml

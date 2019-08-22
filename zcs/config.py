@@ -218,13 +218,24 @@ class CfgNode(yacs.CfgNode):
 
     __placeholder__ = "__placeholder_for_CfgNode_base__"
 
-    def clone_as_base(self):
+    def clone_as_base(self, exclude=None):
         base = self.clone()
+        if exclude is None:
+            exclude = []
+        if isinstance(exclude, str):
+            exclude = [exclude]
+        exclude = [key.replace(">", ".") for key in exclude]
 
-        def trun_value_to_placeholder_(cfg):
+        def trun_value_to_placeholder_(cfg, key_list=None):
+            if key_list is None:
+                key_list = []
             for k, v in cfg.items():
+                _key_list = key_list + [k]
+                key = ".".join(_key_list)
+                if key in exclude:
+                    continue
                 if isinstance(v, yacs.CfgNode):
-                    trun_value_to_placeholder_(v)
+                    trun_value_to_placeholder_(v, key_list=_key_list)
                 else:
                     cfg[k] = self.__placeholder__
 
