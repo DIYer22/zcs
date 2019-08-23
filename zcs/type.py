@@ -74,6 +74,9 @@ def try_return_None(type_fun):
     return _type
 
 
+str_or_None = try_return_None(str)
+
+
 if __name__ == "__main__":
     aa = 55
     typee = fstring(dict(aa=3))
