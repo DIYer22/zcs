@@ -1,14 +1,13 @@
 # TODO list in Chinese
 
 ## TODO
-
+ - [ ] when dump, save types that not support by yaml(e.g. slice) as string
  - [ ] DEBUG: `clone()` in Windows and WSL will raise Exception
  - [ ] README: English Version
  - [ ] test code
  - [ ] dump to yaml or zcs.pkl and suport vis pkl
  - [ ] `--help`
  - [ ] try test other Action
- - [ ] make PR to `yacs` and ask for suggestion of `zcs`
 
 ## Done
 

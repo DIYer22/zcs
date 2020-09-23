@@ -533,7 +533,7 @@ class HelpFormatter(object):
     def _format_action_invocation(self, action):
         if not action.option_strings:
             default = self._get_default_metavar_for_positional(action)
-            metavar, = self._metavar_formatter(action, default)(1)
+            (metavar,) = self._metavar_formatter(action, default)(1)
             return metavar
 
         else:
@@ -2151,7 +2151,7 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
             # if exactly one action matched, this segmentation is good,
             # so return the parsed action
             elif len(option_tuples) == 1:
-                option_tuple, = option_tuples
+                (option_tuple,) = option_tuples
                 return option_tuple
 
         # if it was not found as an option, but it looks like a negative
@@ -2385,7 +2385,7 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
 
         # single argument or optional argument produces a single value
         elif len(arg_strings) == 1 and action.nargs in [None, OPTIONAL]:
-            arg_string, = arg_strings
+            (arg_string,) = arg_strings
             value = self._get_value(action, arg_string)
             self._check_value(action, value)
 
