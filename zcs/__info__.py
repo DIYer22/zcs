@@ -1,4 +1,4 @@
-__version__ = "0.1.16"
+__version__ = "0.1.17"
 __description__ = "Z Configuration System: a flexible powerful configuration system which takes advantage of both argparse and yacs"
 __license__ = "MIT"
 __author__ = "DIYer22"
