@@ -152,7 +152,7 @@ class CfgNode(yacs.CfgNode):
         )
         return cls(module.cfg)
 
-    def merge_from_list(self, cfg_list):
+    def merge_from_list(self, cfg_list, assert_exsit=True):
         """Merge config (keys, values) in a list (e.g., from command line) into
         this CfgNode. For example, `cfg_list = ['FOO.BAR', 0.5]`.
         """
@@ -171,14 +171,18 @@ class CfgNode(yacs.CfgNode):
             key_list = full_key.replace(">", ".").split(".")
             d = self
             for subkey in key_list[:-1]:
+                if assert_exsit:
+                    yacs._assert_with_logging(
+                        subkey in d, "Non-existent key: {}".format(full_key)
+                    )
+                else:
+                    d[subkey] = d.get(subkey, type(self)())
+                d = d[subkey]
+            subkey = key_list[-1]
+            if assert_exsit:
                 yacs._assert_with_logging(
                     subkey in d, "Non-existent key: {}".format(full_key)
                 )
-                d = d[subkey]
-            subkey = key_list[-1]
-            yacs._assert_with_logging(
-                subkey in d, "Non-existent key: {}".format(full_key)
-            )
             value = _parser_action(d, subkey, v)
             d[subkey] = value
 
