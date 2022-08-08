@@ -135,6 +135,17 @@ class CfgNode(yacs.CfgNode):
         """Merge `cfg_other` into this CfgNode."""
         _merge_a_into_b(cfg_other, self, self, [])
 
+    def merge_and_setitem(self, cfg_other):
+        """Merge and set new items if not exists."""
+        for k, v in cfg_other.items():
+            if k not in self:
+                self[k] = v
+            else:
+                if isinstance(v, yacs.CfgNode):
+                    self[k].merge_and_setitem(v)
+                else:
+                    self[k] = v
+
     @classmethod
     def _load_cfg_py_source(cls, filename):
         """Load a config from a Python source file."""
