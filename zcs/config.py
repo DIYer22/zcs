@@ -203,26 +203,55 @@ class CfgNode(yacs.CfgNode):
             cfg_list = cfg_list_str.strip().split()
         return self.merge_from_list(cfg_list)
 
-    def dump(self, fname=None, **kwargs):
+    def dump(self, fname=None, skip_type_error=False, **kwargs):
         """Dump to a string."""
+        if skip_type_error:
+            """
+            skip_type_error is used to skip type error when dumping to file.
+            not support number as key, which will cover to string because decode from json
+            TODO: support number as key
+            """
+            import json
 
-        def convert_to_dict(cfg_node, key_list):
-            if not isinstance(cfg_node, CfgNode):
-                yacs._assert_with_logging(
-                    _valid_type(cfg_node),
-                    "Key {} with value {} is not a valid type; valid types: {}".format(
-                        ".".join(key_list), type(cfg_node), _VALID_TYPES
-                    ),
-                )
-                return cfg_node
-            else:
-                cfg_dict = dict(cfg_node)
-                for k, v in cfg_dict.items():
-                    cfg_dict[k] = convert_to_dict(v, key_list + [k])
-                return cfg_dict
+            class NoErrorEncoder(json.JSONEncoder):
+                def default(self, obj):
+                    try:
+                        try:
+                            import numpy as np
 
-        self_as_dict = convert_to_dict(self, [])
-        yaml_str = yaml.safe_dump(self_as_dict, **kwargs)
+                            if isinstance(obj, (np.ndarray, np.number)):
+                                obj = obj.tolist()
+                        except ImportError:
+                            pass
+                        return json.JSONEncoder.default(self, obj)
+                    except TypeError:
+                        return f"[TypeError] Can't Serialize obj: {obj}"
+
+            yaml_str = yaml.safe_dump(
+                json.loads(json.dumps(self, cls=NoErrorEncoder)), **kwargs
+            )
+        else:
+
+            def convert_to_dict(cfg_node, key_list):
+                if not isinstance(cfg_node, CfgNode):
+                    VALID_TYPES = _VALID_TYPES.copy()
+                    VALID_TYPES.add(dict)
+                    yacs._assert_with_logging(
+                        # _valid_type(cfg_node),
+                        (type(cfg_node) in VALID_TYPES),
+                        "Key {} with value {} is not a valid type; valid types: {}".format(
+                            ".".join(map(str, key_list)), type(cfg_node), VALID_TYPES
+                        ),
+                    )
+                    return cfg_node
+                else:
+                    cfg_dict = dict(cfg_node)
+                    for k, v in cfg_dict.items():
+                        cfg_dict[k] = convert_to_dict(v, key_list + [k])
+                    return cfg_dict
+
+            self_as_dict = convert_to_dict(self, [])
+            yaml_str = yaml.safe_dump(self_as_dict, **kwargs)
         if fname is not None:
             dir_name = os.path.dirname(fname)
             if not os.path.isdir(dir_name):
