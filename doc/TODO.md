@@ -3,7 +3,7 @@
 ## TODO
  - [ ] if default is str, do type(default)
  - [ ] when dump, save types that not support by yaml(e.g. slice) as string
- - [ ] DEBUG: `clone()` in Windows and WSL will raise Exception
+ - [ ] TEST: `clone()` in Windows and WSL will raise Exception?
  - [ ] README: English Version
  - [ ] test code
  - [ ] dump to yaml or zcs.pkl and suport vis pkl

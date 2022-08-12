@@ -6,6 +6,7 @@
 Created on Fri Jul 19 13:30:51 2019
 """
 import os
+import sys
 import copy
 import yaml
 from functools import wraps
@@ -67,7 +68,7 @@ class CfgNode(yacs.CfgNode):
 
     @wraps(yacs.CfgNode.__init__)
     def __init__(self, *l, **kv):
-        super(CfgNode, self).__init__(*l, **kv)
+        super().__init__(*l, **kv)
         parser = argparse.ArgumentParser(prog="cfg")
         self.__dict__["__parser__"] = parser
         self.__dict__["__action_dic__"] = parser._option_string_actions
@@ -232,7 +233,7 @@ class CfgNode(yacs.CfgNode):
             )
         else:
 
-            def convert_to_dict(cfg_node, key_list):
+            def convert_to_dict_with_assert(cfg_node, key_list):
                 if not isinstance(cfg_node, CfgNode):
                     VALID_TYPES = _VALID_TYPES.copy()
                     VALID_TYPES.add(dict)
@@ -247,10 +248,10 @@ class CfgNode(yacs.CfgNode):
                 else:
                     cfg_dict = dict(cfg_node)
                     for k, v in cfg_dict.items():
-                        cfg_dict[k] = convert_to_dict(v, key_list + [k])
+                        cfg_dict[k] = convert_to_dict_with_assert(v, key_list + [k])
                     return cfg_dict
 
-            self_as_dict = convert_to_dict(self, [])
+            self_as_dict = convert_to_dict_with_assert(self, [])
             yaml_str = yaml.safe_dump(self_as_dict, **kwargs)
         if fname is not None:
             dir_name = os.path.dirname(fname)
@@ -261,6 +262,24 @@ class CfgNode(yacs.CfgNode):
         return yaml_str
 
     __placeholder__ = "__placeholder_for_CfgNode_base__"
+
+    def convert_to_dict(self):
+        cfg_dict = dict()
+        for k, v in self.items():
+            if isinstance(v, CfgNode):
+                cfg_dict[k] = v.convert_to_dict()
+            else:
+                cfg_dict[k] = v
+        return cfg_dict
+
+    def clone(self):
+        """Recursively copy this CfgNode."""
+        if tuple(sys.version_info) >= (3, 7):
+            return copy.deepcopy(self)
+        else:  # if py version < 3.6 deepcopy will TypeError: cannot deepcopy this pattern object
+            cls = type(self)
+            dic = copy.deepcopy(self.convert_to_dict())
+            return cls(dic, new_allowed=self.__dict__[self.NEW_ALLOWED])
 
     def clone_as_base(self, exclude=None):
         base = self.clone()
