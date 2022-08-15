@@ -164,10 +164,15 @@ class CfgNode(yacs.CfgNode):
         )
         return cls(module.cfg)
 
-    def merge_from_list(self, cfg_list, assert_exsit=True):
+    def merge_from_list(self, cfg_list, new_allowed=None):
         """Merge config (keys, values) in a list (e.g., from command line) into
         this CfgNode. For example, `cfg_list = ['FOO.BAR', 0.5]`.
         """
+        if isinstance(cfg_list, str):
+            cfg_list = cfg_list.strip().split()
+        if new_allowed is None:
+            new_allowed = self.__dict__[self.NEW_ALLOWED]
+
         yacs._assert_with_logging(
             len(cfg_list) % 2 == 0,
             "Override list has odd length: {}; it must be a list of pairs".format(
@@ -183,7 +188,7 @@ class CfgNode(yacs.CfgNode):
             key_list = full_key.replace(">", ".").split(".")
             d = self
             for subkey in key_list[:-1]:
-                if assert_exsit:
+                if new_allowed:
                     yacs._assert_with_logging(
                         subkey in d, "Non-existent key: {}".format(full_key)
                     )
@@ -191,18 +196,14 @@ class CfgNode(yacs.CfgNode):
                     d[subkey] = d.get(subkey, type(self)())
                 d = d[subkey]
             subkey = key_list[-1]
-            if assert_exsit:
+            if new_allowed:
                 yacs._assert_with_logging(
                     subkey in d, "Non-existent key: {}".format(full_key)
                 )
             value = _parser_action(d, subkey, v)
             d[subkey] = value
 
-    def merge_from_list_or_str(self, cfg_list_str):
-        cfg_list = cfg_list_str
-        if isinstance(cfg_list_str, str):
-            cfg_list = cfg_list_str.strip().split()
-        return self.merge_from_list(cfg_list)
+    merge_from_list_or_str = merge_from_list
 
     def dump(self, fname=None, skip_type_error=False, **kwargs):
         """Dump to a string."""
