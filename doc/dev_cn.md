@@ -17,7 +17,13 @@
     - https://hydra.cc/
     - https://github.com/ashleve/lightning-hydra-template
 - hpman: https://github.com/megvii-research/hpman
-
+- omegaconf: https://github.com/omry/omegaconf
+    - hydra 前身
+    - 对 yaml 做了大量定制
+    - 优点:
+        - cli: arg=value
+        - 支持关系路径, 并动态解析, nested 路径
+- https://github.com/google/gin-config
 
 vs mmdet
 优点
