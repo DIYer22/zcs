@@ -23,8 +23,8 @@ _None_ = {None}
 
 class argument(argparse._AttributeHolder):
     """Same API with "parser.add_argument", but remove name and flags, ex. "--opt"
-    
-    Usage:    
+
+    Usage:
         >>> cfg.FOO = argument(default=None, type=int, help="FOO is a int type, default is None")
     """
 
@@ -275,12 +275,7 @@ class CfgNode(yacs.CfgNode):
 
     def clone(self):
         """Recursively copy this CfgNode."""
-        if tuple(sys.version_info) >= (3, 7):
-            return copy.deepcopy(self)
-        else:  # if py version < 3.6 deepcopy will TypeError: cannot deepcopy this pattern object
-            cls = type(self)
-            dic = copy.deepcopy(self.convert_to_dict())
-            return cls(dic, new_allowed=self.__dict__[self.NEW_ALLOWED])
+        return copy.deepcopy(self)
 
     def clone_as_base(self, exclude=None):
         base = self.clone()
@@ -316,6 +311,14 @@ class CfgNode(yacs.CfgNode):
 
         copy_base_where_v_is_placeholder_(self, base)
         return self
+
+    if tuple(sys.version_info) < (3, 7):
+
+        def __deepcopy__(self):
+            # if py version < 3.7 deepcopy will TypeError: cannot direct deepcopy this pattern object
+            cls = type(self)
+            dic = copy.deepcopy(self.convert_to_dict())
+            return cls(dic, new_allowed=self.__dict__[self.NEW_ALLOWED])
 
 
 _VALID_TYPES = copy.deepcopy(yacs._VALID_TYPES)
