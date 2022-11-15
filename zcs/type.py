@@ -21,8 +21,7 @@ def str2bool(s):
 
 
 def ints(s):
-    """Return a list of int in the string
-    """
+    """Return a list of int in the string"""
     import re
 
     return list(map(int, re.findall(r"-?\d+\d*", s)))

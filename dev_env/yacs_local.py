@@ -283,10 +283,10 @@ class CfgNode(dict):
 
 def load_cfg(cfg_file_obj_or_str):
     """Load a cfg. Supports loading from:
-        - A file object backed by a YAML file
-        - A file object backed by a Python source file that exports an attribute
-          "cfg" that is either a dict or a CfgNode
-        - A string that can be parsed as valid YAML
+    - A file object backed by a YAML file
+    - A file object backed by a Python source file that exports an attribute
+      "cfg" that is either a dict or a CfgNode
+    - A string that can be parsed as valid YAML
     """
     _assert_with_logging(
         isinstance(cfg_file_obj_or_str, _FILE_TYPES + (str,)),
