@@ -314,7 +314,7 @@ class CfgNode(yacs.CfgNode):
 
     if tuple(sys.version_info) < (3, 7):
 
-        def __deepcopy__(self):
+        def __deepcopy__(self, memo=None):
             # if py version < 3.7 deepcopy will TypeError: cannot direct deepcopy this pattern object
             cls = type(self)
             dic = copy.deepcopy(self.convert_to_dict())
