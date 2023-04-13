@@ -47,6 +47,9 @@ class argument(argparse._AttributeHolder):
             from .type import try_return_None
 
             type = try_return_None(type)
+        # if isinstance(default, str) and type is not _None_:
+        #     default = type(default)
+
         dic = dict(
             default=default,
             type=type,

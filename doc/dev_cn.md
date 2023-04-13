@@ -24,6 +24,7 @@
         - cli: arg=value
         - 支持关系路径, 并动态解析, nested 路径
 - https://github.com/google/gin-config
+- https://github.com/google/fiddle
 
 vs mmdet
 优点
